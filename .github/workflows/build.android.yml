@@ -1,0 +1,49 @@
+name: Compilar APK Android
+
+# ¿Cuándo se ejecuta esto?
+on:
+  push:
+    branches:
+      - main # Se ejecuta automáticamente al hacer push a la rama principal
+  workflow_dispatch: # Te permite darle a un botón de "Play" manual en GitHub
+
+jobs:
+  build:
+    name: Construir APK
+    runs-on: ubuntu-latest # Usamos el servidor más rápido y estable
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: ☕ Configurar Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 📦 Instalar dependencias
+        run: npm install
+
+      - name: 🛠️ Generar código nativo (Expo Prebuild)
+        # Esto convierte tu código JS/TS en un proyecto real de Android Studio en la nube
+        run: npx expo prebuild --platform android
+
+      - name: 🚀 Compilar el APK (Release)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: 📤 Subir APK para descargar
+        uses: actions/upload-artifact@v4
+        with:
+          name: SaaS-Forwarder-Release
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 7 # El APK estará disponible para descargar por 7 días
