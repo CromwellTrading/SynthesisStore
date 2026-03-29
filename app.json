@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F172A"
       },
-      "package": "com.tuempresa.smsforwarder",
+      "package": "com.synthesis.smsforwarder",
       "permissions": [
         "READ_SMS",
         "RECEIVE_SMS",
